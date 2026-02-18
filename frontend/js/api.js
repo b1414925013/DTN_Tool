@@ -1,6 +1,6 @@
 // API 基础 URL
 const API_BASE_URL = 'http://localhost:8000/api';
-const PAGES_BASE_URL = 'pages';
+const PAGES_BASE_URL = '/frontend/pages';
 
 // API 请求封装
 class ApiService {
@@ -111,10 +111,23 @@ class ApiService {
 export const GraphDBPasswordApi = {
     /**
      * 获取所有图数据库密码
+     * @param {number} skip - 跳过的记录数
+     * @param {number} limit - 返回的记录数
      * @returns {Promise<any[]>} - 密码列表
      */
-    getAll: async () => {
-        return await ApiService.get('/dtn/graph-db-passwords');
+    getAll: async (skip = 0, limit = 100) => {
+        return await ApiService.get(`/dtn/graph-db-passwords?skip=${skip}&limit=${limit}`);
+    },
+    
+    /**
+     * 获取图数据库密码总数
+     * @returns {Promise<number>} - 密码总数
+     */
+    getTotalCount: async () => {
+        // 由于后端没有提供获取总数的API，我们通过获取所有记录来计算总数
+        // 在实际生产环境中，应该添加一个专门的API来获取总数
+        const allPasswords = await ApiService.get('/dtn/graph-db-passwords?skip=0&limit=1000');
+        return allPasswords.length;
     },
     
     /**
@@ -159,10 +172,23 @@ export const GraphDBPasswordApi = {
 export const UserApi = {
     /**
      * 获取所有用户
+     * @param {number} skip - 跳过的记录数
+     * @param {number} limit - 返回的记录数
      * @returns {Promise<any[]>} - 用户列表
      */
-    getAll: async () => {
-        return await ApiService.get('/system/users');
+    getAll: async (skip = 0, limit = 100) => {
+        return await ApiService.get(`/system/users?skip=${skip}&limit=${limit}`);
+    },
+    
+    /**
+     * 获取用户总数
+     * @returns {Promise<number>} - 用户总数
+     */
+    getTotalCount: async () => {
+        // 由于后端没有提供获取总数的API，我们通过获取所有记录来计算总数
+        // 在实际生产环境中，应该添加一个专门的API来获取总数
+        const allUsers = await ApiService.get('/system/users?skip=0&limit=1000');
+        return allUsers.length;
     },
     
     /**
@@ -261,6 +287,7 @@ export const Utils = {
 
         // 根据页面名称设置页面标题
         const pageTitles = {
+            'dashboard': '首页',
             'graph-db-password': '图数据库密码管理',
             'user-management': '用户管理'
         };
@@ -270,7 +297,7 @@ export const Utils = {
 
         // 加载对应的页面文件
         $.ajax({
-            url: `${PAGES_BASE_URL}/${pageName}.html`,
+            url: `/frontend/pages/${pageName}.html`,
             method: 'GET',
             dataType: 'html',
             success: function(html) {

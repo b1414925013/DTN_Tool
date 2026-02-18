@@ -45,12 +45,12 @@ from fastapi.staticfiles import StaticFiles
 
 app.mount("/frontend", StaticFiles(directory="frontend"), name="frontend")
 
-# 根路径重定向到前端页面
-from fastapi.responses import RedirectResponse
+# 根路径返回前端页面
+from fastapi.responses import FileResponse
 
 @app.get("/")
 def read_root():
-    return RedirectResponse(url="/frontend/index.html")
+    return FileResponse("frontend/index.html")
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)

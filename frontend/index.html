@@ -9,49 +9,54 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <!-- 自定义 CSS -->
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="/frontend/css/style.css">
 </head>
 <body>
     <!-- 侧边栏导航 -->
     <div class="sidebar">
         <div class="sidebar-header">
-            <h3><i class="fas fa-tools"></i> Auto_Tool</h3>
+            <h3><i class="fas fa-tools"></i> <span>Auto_Tool</span></h3>
         </div>
         <ul class="nav flex-column">
             <li class="nav-item">
+                <a class="nav-link" href="#" data-page="dashboard">
+                    <i class="fas fa-home"></i> <span>首页</span>
+                </a>
+            </li>
+            <li class="nav-item">
                 <a class="nav-link" href="#">
-                    <i class="fas fa-database"></i> DTN
+                    <i class="fas fa-database"></i> <span>DTN</span>
                     <i class="fas fa-chevron-right ml-auto"></i>
                 </a>
                 <ul class="nav flex-column submenu d-none">
                     <li class="nav-item">
                         <a class="nav-link" href="#" data-page="graph-db-password">
-                            <i class="fas fa-key"></i> 图数据库密码
+                            <i class="fas fa-key"></i> <span>图数据库密码</span>
                         </a>
                     </li>
                 </ul>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="#">
-                    <i class="fas fa-chart-bar"></i> DIM
+                    <i class="fas fa-chart-bar"></i> <span>DIM</span>
                 </a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="#">
-                    <i class="fas fa-cog"></i> 系统管理
+                    <i class="fas fa-cog"></i> <span>系统管理</span>
                     <i class="fas fa-chevron-right ml-auto"></i>
                 </a>
                 <ul class="nav flex-column submenu d-none">
                     <li class="nav-item">
                         <a class="nav-link" href="#" data-page="user-management">
-                            <i class="fas fa-users"></i> 用户管理
+                            <i class="fas fa-users"></i> <span>用户管理</span>
                         </a>
                     </li>
                 </ul>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="#">
-                    <i class="fas fa-globe"></i> 公共
+                    <i class="fas fa-globe"></i> <span>公共</span>
                 </a>
             </li>
         </ul>
@@ -62,7 +67,7 @@
         <!-- 顶部导航栏 -->
         <div class="top-navbar d-flex justify-content-between align-items-center">
             <div class="d-flex align-items-center">
-                <button class="btn btn-outline-secondary d-md-none mr-2" id="sidebar-toggle">
+                <button class="btn btn-outline-secondary mr-2" id="sidebar-toggle">
                     <i class="fas fa-bars"></i>
                 </button>
                 <h4 class="mb-0" id="page-title">Auto_Tool 后台管理系统</h4>
@@ -95,9 +100,9 @@
     <!-- 公共 API 服务 -->
     <script type="module">
         // 导入 API 服务和工具函数
-        import { Utils } from './js/api.js';
-        import { initGraphDBPasswordPage } from './js/graph-db-password.js';
-        import { initUserManagementPage } from './js/user-management.js';
+        import { Utils } from '/frontend/js/api.js';
+        import { initGraphDBPasswordPage } from '/frontend/js/graph-db-password.js';
+        import { initUserManagementPage } from '/frontend/js/user-management.js';
 
         // 页面加载完成后执行
         $(document).ready(function() {
@@ -107,17 +112,82 @@
 
         // 初始化应用
         function initApp() {
+            // 检查登录状态
+            checkAuthStatus();
+        }
+        
+        // 检查登录状态
+        function checkAuthStatus() {
+            if (!localStorage.getItem('token')) {
+                // 未登录，跳转到登录页
+                window.location.href = '/frontend/pages/login.html';
+                return;
+            }
+            
+            // 已登录，初始化应用
+            initAuthenticatedApp();
+        }
+        
+        // 初始化已认证的应用
+        function initAuthenticatedApp() {
+            // 显示用户名
+            const username = localStorage.getItem('username') || '用户';
+            $('.top-navbar .mr-3').text(`欢迎，${username}`);
+            
+            // 根据角色显示/隐藏系统管理菜单
+            const userRole = localStorage.getItem('user_role') || 'user';
+            if (userRole !== 'admin') {
+                // 非管理员，隐藏系统管理菜单
+                $('li.nav-item:has(a:contains(系统管理))').remove();
+            }
+            
             // 绑定导航事件
             bindNavigationEvents();
             
-            // 默认加载第一个页面
-            Utils.loadPage('graph-db-password');
+            // 绑定退出登录事件
+            $('.btn-outline-secondary:has(i.fa-sign-out-alt)').on('click', function() {
+                logout();
+            });
+            
+            // 默认加载首页
+            Utils.loadPage('dashboard');
+        }
+        
+        // 退出登录
+        function logout() {
+            // 清除本地存储
+            localStorage.removeItem('token');
+            localStorage.removeItem('token_type');
+            localStorage.removeItem('user');
+            localStorage.removeItem('user_role');
+            localStorage.removeItem('username');
+            
+            // 跳转到登录页
+            window.location.href = '/frontend/pages/login.html';
         }
 
         // 绑定导航事件
         function bindNavigationEvents() {
+            // 所有带data-page属性的链接点击事件（加载页面）
+            $('.nav-link[data-page]').on('click', function(e) {
+                e.preventDefault();
+                
+                // 移除所有活动状态
+                $('.nav-link').removeClass('active');
+                
+                // 添加当前活动状态
+                $(this).addClass('active');
+                
+                // 获取页面名称
+                const pageName = $(this).data('page');
+                if (pageName) {
+                    // 加载页面
+                    Utils.loadPage(pageName);
+                }
+            });
+
             // 一级菜单点击事件（展开/收起二级菜单）
-            $('.nav-item > .nav-link').on('click', function(e) {
+            $('.nav-item > .nav-link:not([data-page])').on('click', function(e) {
                 e.preventDefault();
                 
                 // 切换二级菜单的显示/隐藏
@@ -135,34 +205,21 @@
                         }
                     }
                 }
-                
-                // 确保一级菜单点击时不会加载任何页面
-                // 移除所有活动状态，避免混淆
-                $('.nav-link').removeClass('active');
             });
 
-            // 二级菜单点击事件（加载页面）
-            $('.submenu .nav-link').on('click', function(e) {
-                e.preventDefault();
-                
-                // 移除所有活动状态
-                $('.nav-link').removeClass('active');
-                
-                // 添加当前活动状态
-                $(this).addClass('active');
-                
-                // 获取页面名称
-                const pageName = $(this).data('page');
-                if (pageName) {
-                    // 加载页面
-                    Utils.loadPage(pageName);
-                }
-            });
-
-            // 侧边栏切换按钮（移动端）
+            // 侧边栏切换按钮（显示/隐藏侧边栏）
             $('#sidebar-toggle').on('click', function() {
-                $('.sidebar').toggleClass('active');
+                const sidebar = $('.sidebar');
+                const mainContent = $('.main-content');
+                
+                // 切换侧边栏显示/隐藏
+                sidebar.toggleClass('hidden');
+                
+                // 切换主内容区域左边距
+                mainContent.toggleClass('sidebar-hidden');
             });
+
+
         }
 
         // 页面特定的初始化函数

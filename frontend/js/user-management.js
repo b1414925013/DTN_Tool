@@ -1,10 +1,14 @@
 // 用户管理页面脚本
 import { UserApi, Utils } from './api.js';
 
+// 分页参数
+let currentPage = 1;
+const itemsPerPage = 10;
+
 // 初始化用户管理页面
 export async function initUserManagementPage() {
     // 加载用户数据
-    await loadUsers();
+    await loadUsers(currentPage, itemsPerPage);
 
     // 绑定新增用户按钮事件
     $('#add-user-btn').on('click', function() {
@@ -20,19 +24,21 @@ export async function initUserManagementPage() {
 
     // 绑定搜索按钮事件
     $('#user-search-btn').on('click', function() {
+        currentPage = 1;
         searchUsers();
     });
 
     // 绑定搜索输入框回车事件
     $('#user-search-input').on('keypress', function(e) {
         if (e.which === 13) {
+            currentPage = 1;
             searchUsers();
         }
     });
 }
 
 // 加载用户数据
-async function loadUsers() {
+async function loadUsers(page = 1, limit = 10) {
     // 显示加载动画
     $('#user-table-body').html(`
         <tr>
@@ -46,8 +52,10 @@ async function loadUsers() {
     `);
     
     try {
-        const data = await UserApi.getAll();
-        renderUserTable(data);
+        const skip = (page - 1) * limit;
+        const data = await UserApi.getAll(skip, limit);
+        const totalCount = await UserApi.getTotalCount();
+        renderUserTable(data, totalCount, page, limit);
     } catch (error) {
         console.error('Error loading users:', error);
         $('#user-table-body').html(`
@@ -57,7 +65,7 @@ async function loadUsers() {
                         <i class="fas fa-exclamation-circle mr-2"></i>
                         加载失败，请检查网络连接或服务器状态
                     </div>
-                    <button class="btn btn-primary mt-2" onclick="loadUsers()">
+                    <button class="btn btn-primary mt-2" onclick="loadUsers(${page}, ${limit})">
                         <i class="fas fa-sync-alt mr-1"></i> 重试
                     </button>
                 </td>
@@ -67,7 +75,7 @@ async function loadUsers() {
 }
 
 // 渲染用户表格
-function renderUserTable(users) {
+function renderUserTable(users, totalCount, currentPage, itemsPerPage) {
     let html = '';
     
     if (users.length === 0) {
@@ -92,6 +100,68 @@ function renderUserTable(users) {
     }
     
     $('#user-table-body').html(html);
+    
+    // 渲染分页控件
+    renderPagination(totalCount, currentPage, itemsPerPage);
+}
+
+// 渲染分页控件
+function renderPagination(totalCount, currentPage, itemsPerPage) {
+    const totalPages = Math.ceil(totalCount / itemsPerPage);
+    
+    let paginationHtml = '';
+    
+    if (totalPages > 1) {
+        paginationHtml = `
+            <nav class="mt-4">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+                        <button class="page-link" onclick="loadUsers(${currentPage - 1}, ${itemsPerPage})">&laquo;</button>
+                    </li>
+        `;
+        
+        // 计算显示的页码范围
+        let startPage = Math.max(1, currentPage - 2);
+        let endPage = Math.min(totalPages, startPage + 4);
+        
+        if (endPage - startPage < 4) {
+            startPage = Math.max(1, endPage - 4);
+        }
+        
+        // 添加页码按钮
+        for (let i = startPage; i <= endPage; i++) {
+            paginationHtml += `
+                <li class="page-item ${i === currentPage ? 'active' : ''}">
+                    <button class="page-link" onclick="loadUsers(${i}, ${itemsPerPage})"><strong>${i}</strong></button>
+                </li>
+            `;
+        }
+        
+        paginationHtml += `
+                    <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+                        <button class="page-link" onclick="loadUsers(${currentPage + 1}, ${itemsPerPage})">&raquo;</button>
+                    </li>
+                </ul>
+            </nav>
+        `;
+    }
+    
+    // 移除旧的分页控件（如果存在）
+    $('.card-footer').remove();
+    
+    // 添加新的分页控件
+    $('.card').append(`
+        <div class="card-footer bg-white border-top">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="text-muted">
+                    共 <strong>${totalCount}</strong> 条记录，每页显示 <strong>${itemsPerPage}</strong> 条
+                </div>
+                <div>
+                    ${paginationHtml}
+                </div>
+            </div>
+        </div>
+    `);
 }
 
 // 重置用户表单

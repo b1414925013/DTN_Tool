@@ -1,10 +1,14 @@
 // 图数据库密码管理页面脚本
 import { GraphDBPasswordApi, Utils } from './api.js';
 
+// 分页参数
+let currentPage = 1;
+const itemsPerPage = 10;
+
 // 初始化图数据库密码页面
 export async function initGraphDBPasswordPage() {
     // 加载密码数据
-    await loadPasswords();
+    await loadPasswords(currentPage, itemsPerPage);
 
     // 绑定新增密码按钮事件
     $('#add-password-btn').on('click', function() {
@@ -20,19 +24,21 @@ export async function initGraphDBPasswordPage() {
 
     // 绑定搜索按钮事件
     $('#search-btn').on('click', function() {
+        currentPage = 1;
         searchPasswords();
     });
 
     // 绑定搜索输入框回车事件
     $('#search-input').on('keypress', function(e) {
         if (e.which === 13) {
+            currentPage = 1;
             searchPasswords();
         }
     });
 }
 
 // 加载图数据库密码数据
-async function loadPasswords() {
+async function loadPasswords(page = 1, limit = 10) {
     // 显示加载动画
     $('#password-table-body').html(`
         <tr>
@@ -46,8 +52,10 @@ async function loadPasswords() {
     `);
     
     try {
-        const data = await GraphDBPasswordApi.getAll();
-        renderPasswordTable(data);
+        const skip = (page - 1) * limit;
+        const data = await GraphDBPasswordApi.getAll(skip, limit);
+        const totalCount = await GraphDBPasswordApi.getTotalCount();
+        renderPasswordTable(data, totalCount, page, limit);
     } catch (error) {
         console.error('Error loading passwords:', error);
         $('#password-table-body').html(`
@@ -57,7 +65,7 @@ async function loadPasswords() {
                         <i class="fas fa-exclamation-circle mr-2"></i>
                         加载失败，请检查网络连接或服务器状态
                     </div>
-                    <button class="btn btn-primary mt-2" onclick="loadPasswords()">
+                    <button class="btn btn-primary mt-2" onclick="loadPasswords(${page}, ${limit})">
                         <i class="fas fa-sync-alt mr-1"></i> 重试
                     </button>
                 </td>
@@ -67,7 +75,7 @@ async function loadPasswords() {
 }
 
 // 渲染密码表格
-function renderPasswordTable(passwords) {
+function renderPasswordTable(passwords, totalCount, currentPage, itemsPerPage) {
     let html = '';
     
     if (passwords.length === 0) {
@@ -91,6 +99,68 @@ function renderPasswordTable(passwords) {
     }
     
     $('#password-table-body').html(html);
+    
+    // 渲染分页控件
+    renderPagination(totalCount, currentPage, itemsPerPage);
+}
+
+// 渲染分页控件
+function renderPagination(totalCount, currentPage, itemsPerPage) {
+    const totalPages = Math.ceil(totalCount / itemsPerPage);
+    
+    let paginationHtml = '';
+    
+    if (totalPages > 1) {
+        paginationHtml = `
+            <nav class="mt-4">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+                        <button class="page-link" onclick="loadPasswords(${currentPage - 1}, ${itemsPerPage})">&laquo;</button>
+                    </li>
+        `;
+        
+        // 计算显示的页码范围
+        let startPage = Math.max(1, currentPage - 2);
+        let endPage = Math.min(totalPages, startPage + 4);
+        
+        if (endPage - startPage < 4) {
+            startPage = Math.max(1, endPage - 4);
+        }
+        
+        // 添加页码按钮
+        for (let i = startPage; i <= endPage; i++) {
+            paginationHtml += `
+                <li class="page-item ${i === currentPage ? 'active' : ''}">
+                    <button class="page-link" onclick="loadPasswords(${i}, ${itemsPerPage})"><strong>${i}</strong></button>
+                </li>
+            `;
+        }
+        
+        paginationHtml += `
+                    <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+                        <button class="page-link" onclick="loadPasswords(${currentPage + 1}, ${itemsPerPage})">&raquo;</button>
+                    </li>
+                </ul>
+            </nav>
+        `;
+    }
+    
+    // 移除旧的分页控件（如果存在）
+    $('.card-footer').remove();
+    
+    // 添加新的分页控件
+    $('.card').append(`
+        <div class="card-footer bg-white border-top">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="text-muted">
+                    共 <strong>${totalCount}</strong> 条记录，每页显示 <strong>${itemsPerPage}</strong> 条
+                </div>
+                <div>
+                    ${paginationHtml}
+                </div>
+            </div>
+        </div>
+    `);
 }
 
 // 重置密码表单

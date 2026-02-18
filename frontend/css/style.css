@@ -27,6 +27,18 @@ body {
     z-index: 1000;
 }
 
+
+
+/* 侧边栏隐藏功能 */
+.sidebar.hidden {
+    width: 0;
+    overflow: hidden;
+}
+
+.main-content.sidebar-hidden {
+    margin-left: 0;
+}
+
 .sidebar-header {
     padding: 1.5rem;
     background-color: #34495e;
@@ -37,7 +49,11 @@ body {
     margin: 0;
     font-size: 1.2rem;
     font-weight: 600;
+    display: flex;
+    align-items: center;
 }
+
+
 
 .nav-link {
     color: rgba(255, 255, 255, 0.8);
@@ -93,7 +109,10 @@ body {
     margin-left: 250px;
     min-height: 100vh;
     background-color: #f5f7fa;
+    transition: all 0.3s ease;
 }
+
+
 
 .top-navbar {
     background-color: white;

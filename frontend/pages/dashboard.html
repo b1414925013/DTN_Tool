@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>首页 - Auto_Tool</title>
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="row mb-4">
+            <div class="col-lg-12">
+                <h2 class="mb-0">欢迎使用 Auto_Tool</h2>
+                <p class="text-muted">后台管理系统仪表盘</p>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- 统计卡片 -->
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="card bg-primary text-white h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h3 class="card-title">系统状态</h3>
+                                <p class="card-text">运行正常</p>
+                            </div>
+                            <i class="fas fa-server fa-3x opacity-50"></i>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-transparent border-top border-white border-opacity-25">
+                        <a href="#" class="text-white text-decoration-none">
+                            查看详情 <i class="fas fa-arrow-right ml-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="card bg-success text-white h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h3 class="card-title">图数据库</h3>
+                                <p class="card-text">12 个连接</p>
+                            </div>
+                            <i class="fas fa-database fa-3x opacity-50"></i>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-transparent border-top border-white border-opacity-25">
+                        <a href="#" class="text-white text-decoration-none" data-page="graph-db-password">
+                            管理密码 <i class="fas fa-arrow-right ml-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="card bg-warning text-white h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h3 class="card-title">用户数量</h3>
+                                <p class="card-text">28 位用户</p>
+                            </div>
+                            <i class="fas fa-users fa-3x opacity-50"></i>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-transparent border-top border-white border-opacity-25">
+                        <a href="#" class="text-white text-decoration-none" data-page="user-management">
+                            管理用户 <i class="fas fa-arrow-right ml-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="card bg-info text-white h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h3 class="card-title">最近活动</h3>
+                                <p class="card-text">15 分钟前</p>
+                            </div>
+                            <i class="fas fa-clock fa-3x opacity-50"></i>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-transparent border-top border-white border-opacity-25">
+                        <a href="#" class="text-white text-decoration-none">
+                            查看日志 <i class="fas fa-arrow-right ml-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title">系统概览</h4>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>系统版本</span>
+                                <span class="font-weight-medium">1.0.0</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>Python 版本</span>
+                                <span class="font-weight-medium">3.8</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>FastAPI 版本</span>
+                                <span class="font-weight-medium">0.124.4</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>数据库状态</span>
+                                <span class="font-weight-medium text-danger">未连接</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>最后更新</span>
+                                <span class="font-weight-medium">2026-02-18</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title">快速访问</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="grid grid-cols-2 gap-3">
+                            <a href="#" class="btn btn-outline-primary btn-block py-3" data-page="graph-db-password">
+                                <i class="fas fa-key mr-2"></i> 图数据库密码
+                            </a>
+                            <a href="#" class="btn btn-outline-success btn-block py-3" data-page="user-management">
+                                <i class="fas fa-users mr-2"></i> 用户管理
+                            </a>
+                            <a href="#" class="btn btn-outline-warning btn-block py-3">
+                                <i class="fas fa-cog mr-2"></i> 系统设置
+                            </a>
+                            <a href="#" class="btn btn-outline-info btn-block py-3">
+                                <i class="fas fa-question-circle mr-2"></i> 帮助文档
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title">最近操作</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>时间</th>
+                                        <th>操作</th>
+                                        <th>用户</th>
+                                        <th>状态</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>2026-02-18 11:00</td>
+                                        <td>更新用户信息</td>
+                                        <td>管理员</td>
+                                        <td><span class="badge bg-success">成功</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>2026-02-18 10:30</td>
+                                        <td>添加图数据库密码</td>
+                                        <td>管理员</td>
+                                        <td><span class="badge bg-success">成功</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>2026-02-18 10:15</td>
+                                        <td>系统登录</td>
+                                        <td>管理员</td>
+                                        <td><span class="badge bg-success">成功</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>2026-02-18 09:45</td>
+                                        <td>更新系统配置</td>
+                                        <td>管理员</td>
+                                        <td><span class="badge bg-success">成功</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>2026-02-18 09:00</td>
+                                        <td>系统启动</td>
+                                        <td>系统</td>
+                                        <td><span class="badge bg-success">成功</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

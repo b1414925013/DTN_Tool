@@ -42,9 +42,8 @@ ON DUPLICATE KEY UPDATE
 
 -- 插入模拟数据：用户（密码哈希为 '123456' 的 bcrypt 加密结果）
 INSERT INTO users (username, email, password_hash, full_name, role) VALUES
-('admin', 'admin@example.com', '$2b$12$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW', '系统管理员', 'admin'),
-('user1', 'user1@example.com', '$2b$12$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW', '测试用户1', 'user'),
-('user2', 'user2@example.com', '$2b$12$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW', '测试用户2', 'user')
+('admin', 'admin@example.com', '$2b$12$Jl5xQPsCcxu5BfI/MLLDAuy2rD8aywy2DZzNSe4NbBCjHWi3NIuOu', '系统管理员', 'admin'),
+('user', 'user@example.com', '$2b$12$PafoqN4HZllv1DfifOnUzu.kpWZ5YCgnwD3FQRbsoTI.eAGcfiaMW', '测试用户', 'user')
 ON DUPLICATE KEY UPDATE
     email = VALUES(email),
     password_hash = VALUES(password_hash),

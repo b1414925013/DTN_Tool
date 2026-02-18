@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.security import HTTPBearer
 from sqlalchemy.orm import Session
 from typing import List
 from datetime import datetime, timedelta
@@ -28,6 +29,9 @@ def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
 
 def get_password_hash(password):
+    # 确保密码长度不超过72字节
+    if len(password) > 72:
+        password = password[:72]
     return pwd_context.hash(password)
 
 # 创建访问令牌
@@ -41,6 +45,28 @@ def create_access_token(data: dict, expires_delta: timedelta = None):
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
+# 获取当前用户信息
+def get_current_user(token: str = Depends(HTTPBearer()), db: Session = Depends(get_db)):
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    try:
+        payload = jwt.decode(token.credentials, SECRET_KEY, algorithms=[ALGORITHM])
+        username: str = payload.get("sub")
+        if username is None:
+            raise credentials_exception
+    except JWTError:
+        raise credentials_exception
+    
+    # 从数据库获取用户信息
+    user = db.query(UserModel).filter(UserModel.username == username).first()
+    if user is None:
+        raise credentials_exception
+    
+    return user
+
 # 获取所有用户
 @router.get("/users", response_model=List[User])
 def get_users(
@@ -50,6 +76,13 @@ def get_users(
 ):
     users = db.query(UserModel).offset(skip).limit(limit).all()
     return users
+
+# 获取当前用户信息
+@router.get("/users/me", response_model=User)
+def get_me(
+    current_user: UserModel = Depends(get_current_user)
+):
+    return current_user
 
 # 根据 ID 获取用户
 @router.get("/users/{user_id}", response_model=User)
@@ -92,7 +125,11 @@ def create_user(
         )
     
     # 创建新用户
-    hashed_password = get_password_hash(user.password)
+    # 截断密码长度，bcrypt最多支持72字节
+    password = user.password
+    if len(password) > 72:
+        password = password[:72]
+    hashed_password = get_password_hash(password)
     db_user = UserModel(
         username=user.username,
         email=user.email,
@@ -135,7 +172,11 @@ def update_user(
     
     # 处理密码更新
     if "password" in update_data:
-        update_data["password_hash"] = get_password_hash(update_data.pop("password"))
+        # 截断密码长度，bcrypt最多支持72字节
+        password = update_data.pop("password")
+        if len(password) > 72:
+            password = password[:72]
+        update_data["password_hash"] = get_password_hash(password)
     
     for field, value in update_data.items():
         setattr(db_user, field, value)
