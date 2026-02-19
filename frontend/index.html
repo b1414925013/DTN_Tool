@@ -57,7 +57,20 @@
             <li class="nav-item">
                 <a class="nav-link" href="#">
                     <i class="fas fa-globe"></i> <span>公共</span>
+                    <i class="fas fa-chevron-right ml-auto"></i>
                 </a>
+                <ul class="nav flex-column submenu d-none">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-page="common-tools">
+                            <i class="fas fa-tools"></i> <span>公共工具</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-page="custom-tools">
+                            <i class="fas fa-cogs"></i> <span>自定义工具</span>
+                        </a>
+                    </li>
+                </ul>
             </li>
         </ul>
     </div>
@@ -103,6 +116,7 @@
         import { Utils } from '/frontend/js/api.js';
         import { initGraphDBPasswordPage } from '/frontend/js/graph-db-password.js';
         import { initUserManagementPage } from '/frontend/js/user-management.js';
+        import { initDashboardPage } from '/frontend/js/dashboard.js';
 
         // 页面加载完成后执行
         $(document).ready(function() {
@@ -225,11 +239,20 @@
         // 页面特定的初始化函数
         window.initPage = function(pageName) {
             switch (pageName) {
+                case 'dashboard':
+                    initDashboardPage();
+                    break;
                 case 'graph-db-password':
                     initGraphDBPasswordPage();
                     break;
                 case 'user-management':
                     initUserManagementPage();
+                    break;
+                case 'common-tools':
+                    // 公共工具页面不需要额外初始化，因为它有自己的初始化逻辑
+                    break;
+                case 'custom-tools':
+                    // 自定义工具页面不需要额外初始化，因为它有自己的初始化逻辑
                     break;
             }
         };

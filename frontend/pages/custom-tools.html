@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>自定义工具 - Auto_Tool 后台管理系统</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- 自定义 CSS -->
+    <link rel="stylesheet" href="/frontend/css/style.css">
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title">
+                            <i class="fas fa-cogs"></i> 自定义工具
+                        </h5>
+                        <p class="card-text text-muted">
+                            执行自定义的长耗时任务
+                        </p>
+                    </div>
+                    <div class="card-body">
+                        <div class="tools-grid">
+                            <!-- 自定义长耗时任务 -->
+                            <div class="tool-card" data-tool="custom-task">
+                                <div class="tool-icon">
+                                    <i class="fas fa-cogs"></i>
+                                </div>
+                                <div class="tool-title">自定义长耗时任务</div>
+                                <div class="tool-description">执行需要较长时间的自定义任务</div>
+                                <button class="tool-button">使用工具</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 加载中遮罩 -->
+    <div class="loading-overlay d-none" id="loading-overlay">
+        <div class="loading-content">
+            <div class="loading-spinner">
+                <i class="fas fa-spinner"></i>
+            </div>
+            <div class="loading-text">任务运行中</div>
+            <div class="loading-subtext">预计时间5分钟，请等待...</div>
+        </div>
+    </div>
+    
+    <!-- 工具模态框 -->
+    <div class="modal fade" id="tool-modal" tabindex="-1" aria-labelledby="tool-modal-label" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="tool-modal-label">工具名称</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- 工具内容将通过JavaScript动态填充 -->
+                    <div id="tool-content"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary" id="tool-execute">执行</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bootstrap JS 和依赖 -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
+    
+    <script>
+        $(document).ready(function() {
+            initCustomToolsPage();
+        });
+    </script>
+    <script src="/frontend/js/custom-tools.js"></script>
+</body>
+</html>

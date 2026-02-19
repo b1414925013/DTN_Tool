@@ -51,9 +51,38 @@ ON DUPLICATE KEY UPDATE
     role = VALUES(role),
     updated_at = CURRENT_TIMESTAMP;
 
+-- 创建操作日志表
+CREATE TABLE IF NOT EXISTS operation_logs (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    operation_type VARCHAR(50) NOT NULL,
+    operation_desc VARCHAR(255) NOT NULL,
+    username VARCHAR(50),
+    status VARCHAR(20) NOT NULL DEFAULT 'success',
+    request_url VARCHAR(255),
+    request_method VARCHAR(10),
+    ip_address VARCHAR(50),
+    user_agent VARCHAR(255),
+    error_message TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_operation_type (operation_type),
+    INDEX idx_username (username),
+    INDEX idx_created_at (created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 插入模拟数据：操作日志
+INSERT INTO operation_logs (operation_type, operation_desc, username, status, created_at) VALUES
+('登录', '系统登录', '管理员', 'success', DATE_SUB(NOW(), INTERVAL 75 MINUTE)),
+('查询', '查看图数据库密码列表', '管理员', 'success', DATE_SUB(NOW(), INTERVAL 60 MINUTE)),
+('创建', '添加图数据库密码', '管理员', 'success', DATE_SUB(NOW(), INTERVAL 45 MINUTE)),
+('查询', '查看用户列表', '管理员', 'success', DATE_SUB(NOW(), INTERVAL 30 MINUTE)),
+('更新', '更新用户信息', '管理员', 'success', DATE_SUB(NOW(), INTERVAL 15 MINUTE));
+
 -- 查询数据验证
 SELECT '图数据库密码表数据' AS table_name;
 SELECT * FROM graph_db_passwords;
 
 SELECT '用户表数据' AS table_name;
 SELECT id, username, email, full_name, role, created_at FROM users;
+
+SELECT '操作日志表数据' AS table_name;
+SELECT * FROM operation_logs ORDER BY created_at DESC;
